@@ -56,11 +56,9 @@ have squadProof: winCondition d ↔ squadWin d :=
 
       rename_i d_ne_zero
       split
-      rename_i n_eq_one
-      rw [n_eq_one] at h
-      tauto
-
-      rename_i n_ne_one
+      rename_i d_eq_one
+      rw [d_eq_one] at h
+      contradiction
 
       mod_cases (d - 1) % 4
 
@@ -77,7 +75,7 @@ have squadProof: winCondition d ↔ squadWin d :=
         simp
         intro a
         rw [a] at H
-        tauto
+        contradiction
 
       have hacker_not_win: ¬(winCondition (d - 1)) := by
         rw [winCondition]
@@ -109,7 +107,7 @@ have squadProof: winCondition d ↔ squadWin d :=
         simp
         intro a
         rw [a] at H
-        tauto
+        contradiction
 
       have d_m_two_neq_zero: (¬d - 2 = 0) = true := by
         simp [*]
@@ -119,8 +117,8 @@ have squadProof: winCondition d ↔ squadWin d :=
           | zero => contradiction
           | succ d => cases d with
             | zero => contradiction
-            | succ d => simp_all
-        simp_all; tauto
+            | succ d => simp; tauto
+        rw [d_eq_two] at H; tauto
 
       have hacker_not_win: ¬(winCondition (d - 2)) := by
         rw [winCondition]
@@ -155,7 +153,7 @@ have squadProof: winCondition d ↔ squadWin d :=
         simp
         intro a
         rw [a] at H
-        tauto
+        contradiction
 
       have d_m_two_neq_zero: (¬d - 2 = 0) = true := by
         simp [*]
@@ -165,12 +163,12 @@ have squadProof: winCondition d ↔ squadWin d :=
           | zero => contradiction
           | succ d => cases d with
             | zero => contradiction
-            | succ d => simp_all
-        simp_all; tauto
+            | succ d => simp; tauto
+        rw [d_eq_two] at H; tauto
 
       have d_m_three_neq_zero: (¬d - 3 = 0) = true := by
         simp [*]
-        intro
+        intro; rename_i d_m_three_eq_zero
         have d_eq_three: d = 3 := by
           cases d with
           | zero => contradiction
@@ -178,8 +176,8 @@ have squadProof: winCondition d ↔ squadWin d :=
             | zero => contradiction
             | succ d => cases d with
               | zero => contradiction
-              | succ d => simp_all
-        simp_all; tauto
+              | succ d => simp; tauto
+        rw [d_eq_three] at H; tauto
 
       have hacker_not_win: ¬(winCondition (d - 3)) := by
         rw [winCondition]
@@ -216,7 +214,7 @@ have squadProof: winCondition d ↔ squadWin d :=
       rw [squadWin]
       simp at h
       simp [h]
-      intro d_ne_one
+      intro
 
       have d_m_one_win: winCondition (d - 1) := by
         rw [winCondition]
@@ -263,10 +261,8 @@ have hackerProof: winCondition d ↔ hackerWin d :=
 
   Iff.intro
     (fun h: winCondition d => show hackerWin d by
-      rw [winCondition] at h
+      simp [winCondition] at h
       rw [hackerWin]
-      simp at h
-      simp [h]
 
       split
       rename_i d_geq_three
@@ -279,62 +275,56 @@ have hackerProof: winCondition d ↔ hackerWin d :=
           | succ d => cases d with
             | zero => simp; nth_rewrite 2 [squadWin]; simp
             | succ d =>
-              simp at h
               simp
+
               mod_cases (d + 3) % 4
-              tauto
+              -- d + 3 = 0 (mod 4)
+              simp at h
+              contradiction
 
               -- d + 3 = 1 (mod 4)
               have poison: ¬(winCondition (d + 3)) := by
-                rw [winCondition]
-                simp
+                simp [winCondition]
                 have x: Nat.ModEq 4 (d + 2 + 1) (0 + 1) := by
-                  simp [H]
+                  simp; exact H
                 apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 1) at x
                 exact x
-              apply hd_left_neg (d + 3) at poison
-              simp[poison]
-              tauto
+              have strong_induction: d + 3 < d + 1 + 1 + 1 + 1 := by simp
+              apply hd_left_neg (d + 3) strong_induction at poison
+              simp [poison]
 
               -- d + 3 = 2 (mod 4)
               have poison: ¬(winCondition (d + 2)) := by
-                rw [winCondition]
-                simp
+                simp [winCondition]
                 have x: Nat.ModEq 4 (d + 1 + 2) (0 + 2) := by
-                  simp [H]
+                  simp; exact H
                 apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 2) at x
                 exact x
-              apply hd_left_neg (d + 2) at poison
-              simp[poison]
-              tauto
+              have strong_induction: d + 2 < d + 1 + 1 + 1 + 1 := by simp
+              apply hd_left_neg (d + 2) strong_induction at poison
+              simp [poison]
 
               -- d + 3 = 3 (mod 4)
               have poison: ¬(winCondition (d + 1)) := by
-                rw [winCondition]
-                simp
+                simp [winCondition]
                 have x: Nat.ModEq 4 (d + 0 + 3) (0 + 3) := by
-                  simp [H]
+                  simp; exact H
                 apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 3) at x
                 exact x
-              apply hd_left_neg (d + 1) at poison
-              simp[poison]
-              tauto
+              have strong_induction: d + 1 < d + 1 + 1 + 1 + 1 := by simp
+              apply hd_left_neg (d + 1) strong_induction at poison
+              simp [poison]
 
       split
       rename_i d_eq_two
-      cases d with
-      | zero => tauto
-      | succ d => cases d with
-        | zero => contradiction
-        | succ d => cases d with
-          | zero => tauto
-          | succ d => simp_all
+      simp [d_eq_two, squadWin]
 
-      cases d with
-      | zero => tauto
-      | succ d => cases d with
-        | zero => contradiction
-        | succ d => simp)
+      split
+      rename_i d_eq_one
+      rw [d_eq_one] at h
+      contradiction
+
+      trivial)
     (fun h: hackerWin d => show winCondition d by
       contrapose h
       rw [winCondition] at h
@@ -355,10 +345,11 @@ have hackerProof: winCondition d ↔ hackerWin d :=
 
       have d_minus_three_win: winCondition (d - 3) := by
         rw [winCondition]
-        simp
         by_cases d - 3 = 0
+
         rename_i d_m_three_eq_zero
-        tauto
+        rw [d_m_three_eq_zero]; tauto
+
         rename_i d_m_three_neq_zero
         simp [d_m_three_neq_zero]
         cases d with
@@ -370,7 +361,8 @@ have hackerProof: winCondition d ↔ hackerWin d :=
             | succ d => cases d with
               | zero => contradiction
               | succ d =>
-                simp_all
+                simp
+                simp at h
                 rw [← Nat.zero_mod 4, ← Nat.ModEq] at h
                 apply Nat.ModEq.trans h at zero_equiv_four
                 apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 3) at zero_equiv_four
@@ -391,7 +383,8 @@ have hackerProof: winCondition d ↔ hackerWin d :=
           | succ d => cases d with
             | zero => contradiction
             | succ d =>
-              simp_all
+              simp
+              simp at h
               rw [← Nat.zero_mod 4, ← Nat.ModEq] at h
               apply Nat.ModEq.trans h at zero_equiv_four
               apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 2) at zero_equiv_four
@@ -410,7 +403,8 @@ have hackerProof: winCondition d ↔ hackerWin d :=
         | succ d => cases d with
           | zero => contradiction
           | succ d =>
-            simp_all
+            simp
+            simp at h
             rw [← Nat.zero_mod 4, ← Nat.ModEq] at h
             apply Nat.ModEq.trans h at zero_equiv_four
             apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 1) at zero_equiv_four
@@ -442,20 +436,24 @@ have hackerProof: winCondition d ↔ hackerWin d :=
         | succ d => simp
       tauto
 
+      rename_i d_lt_three
       split
       rename_i d_eq_two
       rw [d_eq_two] at h
       contradiction
 
-      simp
+      rename_i d_neq_two
       have d_eq_one: d = 1 := by
         cases d with
-        | zero => contradiction
+        | zero => contradiction -- d = 0
         | succ d => cases d with
-          | zero => tauto
-          | succ d => simp_all
+          | zero => tauto -- d = 1
+          | succ d => cases d with
+            | zero => contradiction -- d = 2
+            | succ d => simp at d_lt_three -- d >= 3
 
-      rw [d_eq_one]; simp; rw [squadWin]; simp
+      simp [d_eq_one]
+      rw [squadWin]; tauto
     )
 
 tauto
