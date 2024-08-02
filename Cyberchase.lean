@@ -79,7 +79,7 @@ have squadProof: winCondition d ↔ squadWin d :=
 
       have hacker_not_win: ¬(winCondition (d - 1)) := by
         rw [winCondition]
-        simp [*] -- eliminates d = 0 case in h
+        simp [d_m_one_neq_zero] -- eliminates d = 0 case in h
 
         have next_d_mod_four: ((d - 1 - 1) % 4) = 0 := by
           cases d with
@@ -102,27 +102,20 @@ have squadProof: winCondition d ↔ squadWin d :=
       -- d - 1 = 2 (mod 4)
       rw [H]; simp
 
-      have d_m_one_neq_zero: (¬d - 1 = 0) = true := by
-        apply neZeroImpliesGtZero at d_ne_zero
-        simp
-        intro a
-        rw [a] at H
-        contradiction
-
       have d_m_two_neq_zero: (¬d - 2 = 0) = true := by
         simp [*]
-        intro
+        intro p
         have d_eq_two: d = 2 := by
           cases d with
           | zero => contradiction
           | succ d => cases d with
             | zero => contradiction
-            | succ d => simp; tauto
+            | succ d => simp; exact p
         rw [d_eq_two] at H; tauto
 
       have hacker_not_win: ¬(winCondition (d - 2)) := by
         rw [winCondition]
-        simp [*] -- eliminates d = 0 case in h
+        simp [d_m_two_neq_zero] -- eliminates d = 0 case in h
 
         have next_d_mod_four: (((d - 2) - 1) % 4) = 0 := by
           cases d with
@@ -148,27 +141,9 @@ have squadProof: winCondition d ↔ squadWin d :=
       -- d - 1 = 3 (mod 4)
       rw [H]; simp
 
-      have d_m_one_neq_zero: (¬d - 1 = 0) = true := by
-        apply neZeroImpliesGtZero at d_ne_zero
-        simp
-        intro a
-        rw [a] at H
-        contradiction
-
-      have d_m_two_neq_zero: (¬d - 2 = 0) = true := by
-        simp [*]
-        intro
-        have d_eq_two: d = 2 := by
-          cases d with
-          | zero => contradiction
-          | succ d => cases d with
-            | zero => contradiction
-            | succ d => simp; tauto
-        rw [d_eq_two] at H; tauto
-
       have d_m_three_neq_zero: (¬d - 3 = 0) = true := by
         simp [*]
-        intro; rename_i d_m_three_eq_zero
+        intro p
         have d_eq_three: d = 3 := by
           cases d with
           | zero => contradiction
@@ -176,12 +151,12 @@ have squadProof: winCondition d ↔ squadWin d :=
             | zero => contradiction
             | succ d => cases d with
               | zero => contradiction
-              | succ d => simp; tauto
+              | succ d => simp; exact p
         rw [d_eq_three] at H; tauto
 
       have hacker_not_win: ¬(winCondition (d - 3)) := by
         rw [winCondition]
-        simp [*] -- eliminates d = 0 case in h
+        simp [d_m_three_neq_zero] -- eliminates d = 0 case in h
 
         have next_d_mod_four: (((d - 3) - 1) % 4) = 0 := by
           cases d with
