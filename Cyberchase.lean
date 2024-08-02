@@ -97,14 +97,13 @@ have squadProof: winCondition d ↔ squadWin d :=
       simp at hacker_not_win
       exact hacker_not_win
       apply neZeroImpliesGtZero at d_ne_zero
-      simp [*]
+      simp [d_ne_zero]
 
       -- d - 1 = 2 (mod 4)
       rw [H]; simp
 
       have d_m_two_neq_zero: (¬d - 2 = 0) = true := by
-        simp [*]
-        intro p
+        simp; intro p
         have d_eq_two: d = 2 := by
           cases d with
           | zero => contradiction
@@ -136,14 +135,13 @@ have squadProof: winCondition d ↔ squadWin d :=
       simp at hacker_not_win
       exact hacker_not_win
       apply neZeroImpliesGtZero at d_ne_zero
-      simp [*]
+      simp [d_ne_zero]
 
       -- d - 1 = 3 (mod 4)
       rw [H]; simp
 
       have d_m_three_neq_zero: (¬d - 3 = 0) = true := by
-        simp [*]
-        intro p
+        simp; intro p
         have d_eq_three: d = 3 := by
           cases d with
           | zero => contradiction
@@ -181,7 +179,7 @@ have squadProof: winCondition d ↔ squadWin d :=
       simp at hacker_not_win
       exact hacker_not_win
       apply neZeroImpliesGtZero at d_ne_zero
-      simp [*]
+      simp [d_ne_zero]
     )
     (fun h: squadWin d => show winCondition d by
       contrapose h
