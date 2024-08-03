@@ -98,11 +98,12 @@ have squadProof: winCondition d ↔ squadWin d :=
               exact H
         exact next_d_mod_four
 
-      apply hd_right (d - 1) at hacker_not_win
+      apply hd_right (d - 1) (by
+        apply neZeroImpliesGtZero at d_ne_zero
+        simp [d_ne_zero]
+      ) at hacker_not_win
       simp at hacker_not_win
       exact hacker_not_win
-      apply neZeroImpliesGtZero at d_ne_zero
-      simp [d_ne_zero]
 
       -- d - 1 = 2 (mod 4)
       rw [H]; simp
@@ -135,11 +136,12 @@ have squadProof: winCondition d ↔ squadWin d :=
                 exact H
         exact next_d_mod_four
 
-      apply hd_right (d - 2) at hacker_not_win
+      apply hd_right (d - 2) (by
+        apply neZeroImpliesGtZero at d_ne_zero
+        simp [d_ne_zero]
+      ) at hacker_not_win
       simp at hacker_not_win
       exact hacker_not_win
-      apply neZeroImpliesGtZero at d_ne_zero
-      simp [d_ne_zero]
 
       -- d - 1 = 3 (mod 4)
       rw [H]; simp
@@ -177,11 +179,12 @@ have squadProof: winCondition d ↔ squadWin d :=
                   exact H
         exact next_d_mod_four
 
-      apply hd_right (d - 3) at hacker_not_win
+      apply hd_right (d - 3) (by
+        apply neZeroImpliesGtZero at d_ne_zero
+        simp [d_ne_zero]
+      ) at hacker_not_win
       simp at hacker_not_win
       exact hacker_not_win
-      apply neZeroImpliesGtZero at d_ne_zero
-      simp [d_ne_zero]
     )
     (fun h: squadWin d => show winCondition d by
       contrapose h
@@ -210,11 +213,11 @@ have squadProof: winCondition d ↔ squadWin d :=
             rw [d_mod_four_eq_zero] at dm1_mod_four_eq_zero
             simp at dm1_mod_four_eq_zero
 
-      apply hd_right_neg (d - 1) at d_m_one_win
-      exact d_m_one_win
-      cases d with
-      | zero => contradiction
-      | succ dm1 => tauto
+      exact hd_right_neg (d - 1) (by
+        cases d with
+        | zero => contradiction
+        | succ dm1 => tauto
+      ) d_m_one_win
     )
 
 have hackerProof: winCondition d ↔ hackerWin d :=
@@ -390,22 +393,22 @@ have hackerProof: winCondition d ↔ hackerWin d :=
         | succ dm1 => simp
 
       have squad_win_three: squadWin (d - 3) := by
-        apply hd_left (d - 3) at d_minus_three_win
-        exact d_minus_three_win
-        simp [d_geq_three]
-        exact zero_lt_d
+        exact hd_left (d - 3) (by
+          simp [d_geq_three]
+          exact zero_lt_d
+        ) d_minus_three_win
 
       have squad_win_two: squadWin (d - 2) := by
-        apply hd_left (d - 2) at d_minus_two_win
-        exact d_minus_two_win
-        simp [d_geq_three]
-        exact zero_lt_d
+        exact hd_left (d - 2) (by
+          simp [d_geq_three]
+          exact zero_lt_d
+        ) d_minus_two_win
 
       have squad_win_one: squadWin (d - 1) := by
-        apply hd_left (d - 1) at d_minus_one_win
-        exact d_minus_one_win
-        simp [d_geq_three]
-        exact zero_lt_d
+        exact hd_left (d - 1) (by
+          simp [d_geq_three]
+          exact zero_lt_d
+        ) d_minus_one_win
       tauto
 
       rename_i d_lt_three
