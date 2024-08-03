@@ -262,8 +262,7 @@ have hackerProof: winCondition d ↔ hackerWin d :=
                   simp; exact H
                 apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 1) at x
                 exact x
-              have strong_induction: dm4 + 4 - 1 < dm4 + 4 := by simp
-              apply hd_left_neg (dm4 + 4 - 1) strong_induction at poison
+              apply hd_left_neg (dm4 + 4 - 1) (by simp) at poison
               simp at poison
               simp [poison]
 
@@ -274,8 +273,7 @@ have hackerProof: winCondition d ↔ hackerWin d :=
                   simp; exact H
                 apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 2) at x
                 exact x
-              have strong_induction: dm4 + 4 - 2 < dm4 + 4 := by simp
-              apply hd_left_neg (dm4 + 4 - 2) strong_induction at poison
+              apply hd_left_neg (dm4 + 4 - 2) (by simp) at poison
               simp at poison
               simp [poison]
 
@@ -286,8 +284,7 @@ have hackerProof: winCondition d ↔ hackerWin d :=
                   simp; exact H
                 apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 3) at x
                 exact x
-              have strong_induction: dm4 + 4 - 3 < dm4 + 4 := by simp
-              apply hd_left_neg (dm4 + 4 - 3) strong_induction at poison
+              apply hd_left_neg (dm4 + 4 - 3) (by simp) at poison
               simp at poison
               simp [poison]
 
