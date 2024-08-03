@@ -46,7 +46,7 @@ have squadProof: winCondition d ↔ squadWin d :=
     intro x; intro x_lt_d
     exact Iff.mp (hd_right_core x x_lt_d)
 
-  have hd_right_rev: ∀ m < d, (winCondition m) → (hackerWin m) := by
+  have hd_right_neg: ∀ m < d, (winCondition m) → (hackerWin m) := by
     intro x; intro x_lt_d
     contrapose
     exact Iff.mpr (hd_right_core x x_lt_d)
@@ -210,7 +210,7 @@ have squadProof: winCondition d ↔ squadWin d :=
             rw [d_mod_four_eq_zero] at dm1_mod_four_eq_zero
             simp at dm1_mod_four_eq_zero
 
-      apply hd_right_rev (d - 1) at d_m_one_win
+      apply hd_right_neg (d - 1) at d_m_one_win
       exact d_m_one_win
       cases d with
       | zero => contradiction
