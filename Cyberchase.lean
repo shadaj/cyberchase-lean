@@ -1,3 +1,4 @@
+import Mathlib.Data.Nat.Cast.Order.Ring
 import Mathlib.Tactic.ModCases
 
 mutual
@@ -60,6 +61,11 @@ have squadProof: winCondition d ↔ squadWin d :=
       trivial
 
       rename_i d_ne_zero
+
+      have d_gt_zero: d > 0 := by
+        apply neZeroImpliesGtZero at d_ne_zero
+        exact d_ne_zero
+
       split
       rename_i d_eq_one
       rw [d_eq_one] at h
@@ -99,8 +105,7 @@ have squadProof: winCondition d ↔ squadWin d :=
         exact next_d_mod_four
 
       apply hd_right (d - 1) (by
-        apply neZeroImpliesGtZero at d_ne_zero
-        simp [d_ne_zero]
+        simp [d_gt_zero]
       ) at hacker_not_win
       simp at hacker_not_win
       exact hacker_not_win
@@ -108,7 +113,7 @@ have squadProof: winCondition d ↔ squadWin d :=
       -- d - 1 = 2 (mod 4)
       rw [H]; simp
 
-      have d_m_two_neq_zero: (¬d - 2 = 0) = true := by
+      have d_m_two_neq_zero: (d - 2 ≠ 0) = true := by
         simp; intro p
         have d_eq_two: d = 2 := by
           cases d with
@@ -137,8 +142,7 @@ have squadProof: winCondition d ↔ squadWin d :=
         exact next_d_mod_four
 
       apply hd_right (d - 2) (by
-        apply neZeroImpliesGtZero at d_ne_zero
-        simp [d_ne_zero]
+        simp [d_gt_zero]
       ) at hacker_not_win
       simp at hacker_not_win
       exact hacker_not_win
@@ -146,7 +150,7 @@ have squadProof: winCondition d ↔ squadWin d :=
       -- d - 1 = 3 (mod 4)
       rw [H]; simp
 
-      have d_m_three_neq_zero: (¬d - 3 = 0) = true := by
+      have d_m_three_neq_zero: (d - 3 ≠ 0) = true := by
         simp; intro p
         have d_eq_three: d = 3 := by
           cases d with
@@ -172,16 +176,15 @@ have squadProof: winCondition d ↔ squadWin d :=
               | succ dm3 => cases dm3 with
                 | zero => contradiction
                 | succ dm4 =>
-                  simp only [Nat.reduceSubDiff, add_tsub_cancel_right]
+                  simp
                   rw [← Nat.zero_mod 4, ← Nat.ModEq]
-                  rw [add_tsub_cancel_right] at H
+                  simp at H
                   apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 3) at H
                   exact H
         exact next_d_mod_four
 
       apply hd_right (d - 3) (by
-        apply neZeroImpliesGtZero at d_ne_zero
-        simp [d_ne_zero]
+        simp [d_gt_zero]
       ) at hacker_not_win
       simp at hacker_not_win
       exact hacker_not_win
@@ -306,7 +309,7 @@ have hackerProof: winCondition d ↔ hackerWin d :=
       rw [winCondition] at h
       rw [hackerWin]
       simp at h
-      simp [h]
+      simp
       split
       rename_i d_geq_three
       simp
@@ -394,19 +397,19 @@ have hackerProof: winCondition d ↔ hackerWin d :=
 
       have squad_win_three: squadWin (d - 3) := by
         exact hd_left (d - 3) (by
-          simp [d_geq_three]
+          simp
           exact zero_lt_d
         ) d_minus_three_win
 
       have squad_win_two: squadWin (d - 2) := by
         exact hd_left (d - 2) (by
-          simp [d_geq_three]
+          simp
           exact zero_lt_d
         ) d_minus_two_win
 
       have squad_win_one: squadWin (d - 1) := by
         exact hd_left (d - 1) (by
-          simp [d_geq_three]
+          simp
           exact zero_lt_d
         ) d_minus_one_win
       tauto
