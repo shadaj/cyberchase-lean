@@ -343,19 +343,13 @@ have hackerProof: winCondition d ↔ hackerWin d :=
           simp
 
       have squad_win_three: squadWin (d - 3) := by
-        exact hd_left (d - 3) (by
-          omega
-        ) d_minus_three_win
+        exact hd_left (d - 3) (by omega) d_minus_three_win
 
       have squad_win_two: squadWin (d - 2) := by
-        exact hd_left (d - 2) (by
-          omega
-        ) d_minus_two_win
+        exact hd_left (d - 2) (by omega) d_minus_two_win
 
       have squad_win_one: squadWin (d - 1) := by
-        exact hd_left (d - 1) (by
-          omega
-        ) d_minus_one_win
+        exact hd_left (d - 1) (by omega) d_minus_one_win
       tauto
 
       rename_i d_lt_three
