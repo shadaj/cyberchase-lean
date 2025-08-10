@@ -145,7 +145,6 @@ have squadProof: winCondition d ↔ squadWin d :=
           match d with
           | 0 | 1 | 2 | 3 => contradiction
           | dm4 + 4 =>
-            simp
             rw [← Nat.zero_mod 4, ← Nat.ModEq]
             simp at H
             apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 3) at H
@@ -169,19 +168,7 @@ have squadProof: winCondition d ↔ squadWin d :=
       have d_m_one_win: winCondition (d - 1) := by
         rw [winCondition]
         simp
-        match d with
-        | 0 | 1 => contradiction
-        | dm2 + 2 =>
-          simp
-          have dm1_mod_four_eq_zero: ((dm2 + 2 - 1) % 4) = 0 := by
-            tauto
-          simp at dm1_mod_four_eq_zero
-          intro d_mod_four_eq_zero
-          rw [← Nat.zero_mod 4] at dm1_mod_four_eq_zero
-          rw [← Nat.zero_mod 4, ← Nat.ModEq] at d_mod_four_eq_zero
-          apply Nat.ModEq.add_right 1 at d_mod_four_eq_zero
-          rw [d_mod_four_eq_zero] at dm1_mod_four_eq_zero
-          simp at dm1_mod_four_eq_zero
+        omega
 
       exact hd_right_neg (d - 1) (by omega) d_m_one_win
     )
@@ -277,79 +264,23 @@ have hackerProof: winCondition d ↔ hackerWin d :=
       rename_i d_geq_three
       simp
 
-      have zero_equiv_four: Nat.ModEq 4 0 4 := by decide
-
-      have d_m_one_equiv_0: Nat.ModEq 4 (d - 1) 0 := by
-        apply And.right at h
-        rw [← Nat.zero_mod 4, ← Nat.ModEq] at h
-        exact h
-
-      have d_minus_three_win: winCondition (d - 3) := by
-        rw [winCondition]
-        by_cases d - 3 = 0
-
-        rename_i d_m_three_eq_zero
-        rw [d_m_three_eq_zero]; decide
-
-        rename_i d_m_three_neq_zero
-        simp [d_m_three_neq_zero]
-        match d with
-        | 0 | 1 | 2 | 3 => contradiction
-        | dm4 + 4 =>
-          simp
-          simp at h
-          rw [← Nat.zero_mod 4, ← Nat.ModEq] at h
-          apply Nat.ModEq.trans h at zero_equiv_four
-          apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 3) at zero_equiv_four
-          rw [zero_equiv_four]
-          simp
-      have d_minus_two_win: winCondition (d - 2) := by
-        rw [winCondition]
-        simp
-        by_cases d - 2 = 0
-        rename_i d_m_two_eq_zero
-        tauto
-        rename_i d_m_two_neq_zero
-        simp [d_m_two_neq_zero]
-        match d with
-        | 0 => contradiction
-        | 1 => contradiction
-        | 2 => contradiction
-        | dm3 + 3 =>
-          simp
-          simp at h
-          rw [← Nat.zero_mod 4, ← Nat.ModEq] at h
-          apply Nat.ModEq.trans h at zero_equiv_four
-          apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 2) at zero_equiv_four
-          rw [zero_equiv_four]
-          simp
-      have d_minus_one_win: winCondition (d - 1) := by
-        rw [winCondition]
-        simp
-        by_cases d - 1 = 0
-        rename_i d_m_one_eq_zero
-        tauto
-        rename_i d_m_one_neq_zero
-        simp [d_m_one_neq_zero]
-        match d with
-        | 0 | 1 => contradiction
-        | dm2 + 2 =>
-          simp
-          simp at h
-          rw [← Nat.zero_mod 4, ← Nat.ModEq] at h
-          apply Nat.ModEq.trans h at zero_equiv_four
-          apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 1) at zero_equiv_four
-          rw [zero_equiv_four]
-          simp
-
       have squad_win_three: squadWin (d - 3) := by
-        exact hd_left (d - 3) (by omega) d_minus_three_win
+        exact hd_left (d - 3) (by omega) (by
+          rw [winCondition]
+          simp
+          omega)
 
       have squad_win_two: squadWin (d - 2) := by
-        exact hd_left (d - 2) (by omega) d_minus_two_win
+        exact hd_left (d - 2) (by omega) (by
+          rw [winCondition]
+          simp
+          omega)
 
       have squad_win_one: squadWin (d - 1) := by
-        exact hd_left (d - 1) (by omega) d_minus_one_win
+        exact hd_left (d - 1) (by omega) (by
+          rw [winCondition]
+          simp
+          omega)
       tauto
 
       rename_i d_lt_three
