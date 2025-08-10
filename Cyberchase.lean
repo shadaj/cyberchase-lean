@@ -225,66 +225,66 @@ have hackerProof: winCondition d ↔ hackerWin d :=
       rw [hackerWin]
 
       split
+      -- d >= 3
       rename_i d_geq_three
-      cases d with
-      | zero => contradiction -- d = 0
-      | succ dm1 => cases dm1 with
-        | zero => contradiction -- d = 1
-        | succ dm2 => cases dm2 with
-          | zero => contradiction -- d = 2
-          | succ dm3 => cases dm3 with
-            | zero => simp; nth_rewrite 2 [squadWin]; simp -- d = 3
-            | succ dm4 => -- d > 3
-              simp
+      match d with
+      | 0 | 1 | 2 => contradiction
+      | 3 => simp; nth_rewrite 2 [squadWin]; simp -- d = 3
+      | dm4 + 4 => -- d > 3
+          simp
 
-              mod_cases (dm4 + 3) % 4 -- split on d - 1 mod 4
-              -- d - 1 = 0 (mod 4)
-              simp at h
-              contradiction
+          mod_cases (dm4 + 3) % 4 -- split on d - 1 mod 4
+          -- d - 1 = 0 (mod 4)
+          simp at h
+          contradiction
 
-              -- d - 1 = 1 (mod 4), Hacker wins by taking 1 dragon
-              have poison: ¬(winCondition (dm4 + 4 - 1)) := by
-                simp [winCondition]
-                have x: Nat.ModEq 4 (dm4 + 4 - 1) (1) := by
-                  simp; exact H
-                apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 1) at x
-                exact x
-              apply hd_left_neg (dm4 + 4 - 1) (by simp) at poison
-              simp at poison
-              simp [poison]
+          -- d - 1 = 1 (mod 4), Hacker wins by taking 1 dragon
+          have poison: ¬(winCondition (dm4 + 4 - 1)) := by
+            simp [winCondition]
+            have x: Nat.ModEq 4 (dm4 + 4 - 1) (1) := by
+              simp; exact H
+            apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 1) at x
+            exact x
+          apply hd_left_neg (dm4 + 4 - 1) (by simp) at poison
+          simp at poison
+          simp [poison]
 
-              -- d - 1 = 2 (mod 4), Hacker wins by taking 2 dragons
-              have poison: ¬(winCondition (dm4 + 4 - 2)) := by
-                simp [winCondition]
-                have x: Nat.ModEq 4 (dm4 + 4 - 1) (2) := by
-                  simp; exact H
-                apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 2) at x
-                exact x
-              apply hd_left_neg (dm4 + 4 - 2) (by simp) at poison
-              simp at poison
-              simp [poison]
+          -- d - 1 = 2 (mod 4), Hacker wins by taking 2 dragons
+          have poison: ¬(winCondition (dm4 + 4 - 2)) := by
+            simp [winCondition]
+            have x: Nat.ModEq 4 (dm4 + 4 - 1) (2) := by
+              simp; exact H
+            apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 2) at x
+            exact x
+          apply hd_left_neg (dm4 + 4 - 2) (by simp) at poison
+          simp at poison
+          simp [poison]
 
-              -- d - 1 = 3 (mod 4), Hacker wins by taking 3 dragons
-              have poison: ¬(winCondition (dm4 + 4 - 3)) := by
-                simp [winCondition]
-                have x: Nat.ModEq 4 (dm4 + 4 - 1) (3) := by
-                  simp; exact H
-                apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 3) at x
-                exact x
-              apply hd_left_neg (dm4 + 4 - 3) (by simp) at poison
-              simp at poison
-              simp [poison]
+          -- d - 1 = 3 (mod 4), Hacker wins by taking 3 dragons
+          have poison: ¬(winCondition (dm4 + 4 - 3)) := by
+            simp [winCondition]
+            have x: Nat.ModEq 4 (dm4 + 4 - 1) (3) := by
+              simp; exact H
+            apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 3) at x
+            exact x
+          apply hd_left_neg (dm4 + 4 - 3) (by simp) at poison
+          simp at poison
+          simp [poison]
 
       split
+      -- d == 2
       rename_i d_eq_two
       simp [d_eq_two, squadWin]
 
       split
+      -- d == 1
       rename_i d_eq_one
       rw [d_eq_one] at h
       contradiction
 
-      trivial)
+      -- d == 0
+      trivial
+    )
     (fun h: hackerWin d => show winCondition d by
       contrapose h
       rw [winCondition] at h
