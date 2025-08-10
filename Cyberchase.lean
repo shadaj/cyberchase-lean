@@ -30,7 +30,7 @@ theorem neZeroImpliesGtZero (n: Nat): n ≠ 0 → n > 0 := by omega
 def winCondition (dragons: Nat): Bool :=
   (dragons = 0) ∨ (dragons - 1) % 4 ≠ 0
 
-lemma sub_eq_zero_contra {d k : Nat} (h : d - k = 0) (H : (d - 1) % 4 = k) : k = 0 := by omega
+lemma dm1_eq_k_means_d_neq_k {d k : Nat} (H : (d - 1) % 4 = k) (k_ne_zero : k ≠ 0) : d - k ≠ 0 := by omega
 
 theorem weWin (dragons: Nat): (winCondition dragons ↔ squadWin dragons) ∧ (winCondition dragons ↔ hackerWin dragons) := by
 induction' dragons using Nat.strong_induction_on with d hd
@@ -79,11 +79,9 @@ have squadProof: winCondition d ↔ squadWin d :=
       -- d - 1 = 1 (mod 4)
       rw [H]; simp
 
-      have d_m_one_neq_zero: (d - 1 ≠ 0) := by omega
-
       have hacker_not_win: ¬(winCondition (d - 1)) := by
         rw [winCondition]
-        simp [d_m_one_neq_zero] -- eliminates d = 0 case in h
+        simp [dm1_eq_k_means_d_neq_k H] -- eliminates d = 0 case in h
 
         have next_d_mod_four: ((d - 1 - 1) % 4) = 0 := by
           match d with
@@ -104,14 +102,9 @@ have squadProof: winCondition d ↔ squadWin d :=
       -- d - 1 = 2 (mod 4)
       rw [H]; simp
 
-      have d_m_two_neq_zero: (d - 2 ≠ 0) := by
-        simp; intro p
-        have absurd := sub_eq_zero_contra p H
-        contradiction
-
       have hacker_not_win: ¬(winCondition (d - 2)) := by
         rw [winCondition]
-        simp [d_m_two_neq_zero] -- eliminates d = 0 case in h
+        simp [dm1_eq_k_means_d_neq_k H] -- eliminates d = 0 case in h
 
         have next_d_mod_four: (((d - 2) - 1) % 4) = 0 := by
           match d with
@@ -132,14 +125,9 @@ have squadProof: winCondition d ↔ squadWin d :=
       -- d - 1 = 3 (mod 4)
       rw [H]; simp
 
-      have d_m_three_neq_zero: (d - 3 ≠ 0) := by
-        simp; intro p
-        have absurd := sub_eq_zero_contra p H
-        contradiction
-
       have hacker_not_win: ¬(winCondition (d - 3)) := by
         rw [winCondition]
-        simp [d_m_three_neq_zero] -- eliminates d = 0 case in h
+        simp [dm1_eq_k_means_d_neq_k H] -- eliminates d = 0 case in h
 
         have next_d_mod_four: (((d - 3) - 1) % 4) = 0 := by
           match d with
