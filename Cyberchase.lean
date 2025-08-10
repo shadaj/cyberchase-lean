@@ -34,6 +34,8 @@ cases n with
 def winCondition (dragons: Nat): Bool :=
   (dragons = 0) ∨ (dragons - 1) % 4 ≠ 0
 
+lemma sub_eq_zero_contra {d k : Nat} (h : d - k = 0) (H : (d - 1) % 4 = k) : k = 0 := by omega
+
 theorem weWin (dragons: Nat): (winCondition dragons ↔ squadWin dragons) ∧ (winCondition dragons ↔ hackerWin dragons) := by
 induction' dragons using Nat.strong_induction_on with d hd
 
@@ -81,12 +83,7 @@ have squadProof: winCondition d ↔ squadWin d :=
       -- d - 1 = 1 (mod 4)
       rw [H]; simp
 
-      have d_m_one_neq_zero: (¬d - 1 = 0) = true := by
-        apply neZeroImpliesGtZero at d_ne_zero
-        simp
-        intro a
-        rw [a] at H
-        contradiction
+      have d_m_one_neq_zero: (d - 1 ≠ 0) := by omega
 
       have hacker_not_win: ¬(winCondition (d - 1)) := by
         rw [winCondition]
@@ -113,15 +110,10 @@ have squadProof: winCondition d ↔ squadWin d :=
       -- d - 1 = 2 (mod 4)
       rw [H]; simp
 
-      have d_m_two_neq_zero: (d - 2 ≠ 0) = true := by
+      have d_m_two_neq_zero: (d - 2 ≠ 0) := by
         simp; intro p
-        have d_eq_two: d = 2 := by
-          cases d with
-          | zero => contradiction
-          | succ dm1 => cases dm1 with
-            | zero => contradiction
-            | succ dm2 => simp; exact p
-        rw [d_eq_two] at H; tauto
+        have absurd := sub_eq_zero_contra p H
+        contradiction
 
       have hacker_not_win: ¬(winCondition (d - 2)) := by
         rw [winCondition]
@@ -150,17 +142,10 @@ have squadProof: winCondition d ↔ squadWin d :=
       -- d - 1 = 3 (mod 4)
       rw [H]; simp
 
-      have d_m_three_neq_zero: (d - 3 ≠ 0) = true := by
+      have d_m_three_neq_zero: (d - 3 ≠ 0) := by
         simp; intro p
-        have d_eq_three: d = 3 := by
-          cases d with
-          | zero => contradiction
-          | succ dm1 => cases dm1 with
-            | zero => contradiction
-            | succ dm2 => cases dm2 with
-              | zero => contradiction
-              | succ dm3 => simp; exact p
-        rw [d_eq_three] at H; tauto
+        have absurd := sub_eq_zero_contra p H
+        contradiction
 
       have hacker_not_win: ¬(winCondition (d - 3)) := by
         rw [winCondition]
