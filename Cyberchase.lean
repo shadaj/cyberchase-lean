@@ -32,10 +32,10 @@ def winCondition (dragons: Nat): Bool :=
 
 lemma dm1_eq_k_means_d_neq_k {d k : Nat} (H : (d - 1) % 4 = k) (k_ne_zero : k ≠ 0) : d - k ≠ 0 := by omega
 
-lemma generic_hacker_not_win {d k dmk : Nat} (H: d - 1 ≡ k [MOD 4]) (km4_eq_k : k % 4 = k) (dmk_eq : dmk + k + 1 = d) (k_ne_zero : k ≠ 0) : ¬(winCondition (d - k)) := by
-  have dmk_eq_rev : dmk = d - k - 1 := by
-    rw [← dmk_eq]
-    omega
+lemma generic_hacker_not_win {d k : Nat} (H: d - 1 ≡ k [MOD 4]) (k_lt_d: k < d) (km4_eq_k : k % 4 = k) (k_ne_zero : k ≠ 0) : ¬(winCondition (d - k)) := by
+  let dmk := d - k - 1
+  have dmk_eq : dmk + k + 1 = d := by omega
+  have dmk_eq_rev : dmk = d - k - 1 := by omega
 
   rw [winCondition]
   simp [dm1_eq_k_means_d_neq_k (by
@@ -97,7 +97,6 @@ have squadProof: winCondition d ↔ squadWin d :=
       simp at h
       contradiction -- H contradicts win state
 
-      -- d - 1 = 1 (mod 4)
       have ⟨k, hk⟩ : ∃ k ≠ 0, k % 4 = k ∧ (d - 1) % 4 = k := by
         use (d - 1) % 4
         omega
@@ -108,17 +107,16 @@ have squadProof: winCondition d ↔ squadWin d :=
           tauto
         rw [← b] at a
         exact a
-      rw [H]; simp
+      rw [H]; simp [hk]
 
-      have hacker_not_win: ¬(winCondition (d - k)) := generic_hacker_not_win (dmk := d - k - 1) (H) (by
-        simp [hk]
-      ) (by omega) (by simp [hk])
+      have hacker_not_win: ¬(winCondition (d - k)) :=
+        generic_hacker_not_win (H) (by omega) (by simp [hk]) (by simp [hk])
 
       apply hd_right (d - k) (by
         omega
       ) at hacker_not_win
       simp at hacker_not_win
-      simp [hk]
+
       match k with
       | 1 | 2 | 3 => simp; exact hacker_not_win
       | _ + 4 => omega -- cannot happen because k % 4 = k
