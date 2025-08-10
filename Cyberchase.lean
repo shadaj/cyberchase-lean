@@ -156,10 +156,11 @@ have hackerProof: winCondition d ↔ hackerWin d :=
       simp [winCondition] at h
       rw [hackerWin]
 
-      split
       -- d >= 3
-      rename_i d_geq_three
       match d with
+      | 0 => trivial
+      | 1 => contradiction
+      | 2 => simp [squadWin]
       | 3 => simp; nth_rewrite 2 [squadWin]; simp -- d = 3
       | dm4 + 4 => -- d > 3
           simp
@@ -178,7 +179,7 @@ have hackerProof: winCondition d ↔ hackerWin d :=
             exact x
           apply hd_left_neg (dm4 + 4 - 1) (by simp) at poison
           simp at poison
-          simp [poison]
+          tauto
 
           -- d - 1 = 2 (mod 4), Hacker wins by taking 2 dragons
           have poison: ¬(winCondition (dm4 + 4 - 2)) := by
@@ -189,7 +190,7 @@ have hackerProof: winCondition d ↔ hackerWin d :=
             exact x
           apply hd_left_neg (dm4 + 4 - 2) (by simp) at poison
           simp at poison
-          simp [poison]
+          tauto
 
           -- d - 1 = 3 (mod 4), Hacker wins by taking 3 dragons
           have poison: ¬(winCondition (dm4 + 4 - 3)) := by
@@ -200,21 +201,7 @@ have hackerProof: winCondition d ↔ hackerWin d :=
             exact x
           apply hd_left_neg (dm4 + 4 - 3) (by simp) at poison
           simp at poison
-          simp [poison]
-
-      split
-      -- d == 2
-      rename_i d_eq_two
-      simp [d_eq_two, squadWin]
-
-      split
-      -- d == 1
-      rename_i d_eq_one
-      rw [d_eq_one] at h
-      contradiction
-
-      -- d == 0
-      trivial
+          tauto
     )
     (fun h: hackerWin d => show winCondition d by
       contrapose h
@@ -223,7 +210,6 @@ have hackerProof: winCondition d ↔ hackerWin d :=
       simp at h
       simp
       split
-      rename_i d_geq_three
       simp
 
       have squad_win_three: squadWin (d - 3) := by
