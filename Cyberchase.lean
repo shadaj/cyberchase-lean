@@ -86,15 +86,13 @@ have squadProof: winCondition d ↔ squadWin d :=
         simp [d_m_one_neq_zero] -- eliminates d = 0 case in h
 
         have next_d_mod_four: ((d - 1 - 1) % 4) = 0 := by
-          cases d with
-          | zero => contradiction
-          | succ dm1 => cases dm1 with
-            | zero => contradiction
-            | succ dm2 =>
-              rw [← Nat.zero_mod 4, ← Nat.ModEq]
-              simp at H
-              apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 1) at H
-              exact H
+          match d with
+          | 0 | 1 => contradiction
+          | dm2 + 2 =>
+            rw [← Nat.zero_mod 4, ← Nat.ModEq]
+            simp at H
+            apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 1) at H
+            exact H
         exact next_d_mod_four
 
       apply hd_right (d - 1) (by
@@ -116,17 +114,13 @@ have squadProof: winCondition d ↔ squadWin d :=
         simp [d_m_two_neq_zero] -- eliminates d = 0 case in h
 
         have next_d_mod_four: (((d - 2) - 1) % 4) = 0 := by
-          cases d with
-          | zero => contradiction
-          | succ dm1 => cases dm1 with
-            | zero => contradiction
-            | succ dm2 => cases dm2 with
-              | zero => contradiction
-              | succ dm3 =>
-                rw [← Nat.zero_mod 4, ← Nat.ModEq]
-                simp at H
-                apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 2) at H
-                exact H
+          match d with
+          | 0 | 1 | 2 => contradiction
+          | dm3 + 3 =>
+            rw [← Nat.zero_mod 4, ← Nat.ModEq]
+            simp at H
+            apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 2) at H
+            exact H
         exact next_d_mod_four
 
       apply hd_right (d - 2) (by
@@ -148,20 +142,14 @@ have squadProof: winCondition d ↔ squadWin d :=
         simp [d_m_three_neq_zero] -- eliminates d = 0 case in h
 
         have next_d_mod_four: (((d - 3) - 1) % 4) = 0 := by
-          cases d with
-          | zero => contradiction
-          | succ dm1 => cases dm1 with
-            | zero => contradiction
-            | succ dm2 => cases dm2 with
-              | zero => contradiction
-              | succ dm3 => cases dm3 with
-                | zero => contradiction
-                | succ dm4 =>
-                  simp
-                  rw [← Nat.zero_mod 4, ← Nat.ModEq]
-                  simp at H
-                  apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 3) at H
-                  exact H
+          match d with
+          | 0 | 1 | 2 | 3 => contradiction
+          | dm4 + 4 =>
+            simp
+            rw [← Nat.zero_mod 4, ← Nat.ModEq]
+            simp at H
+            apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 3) at H
+            exact H
         exact next_d_mod_four
 
       apply hd_right (d - 3) (by
@@ -181,27 +169,21 @@ have squadProof: winCondition d ↔ squadWin d :=
       have d_m_one_win: winCondition (d - 1) := by
         rw [winCondition]
         simp
-        cases d with
-        | zero => contradiction
-        | succ dm1 => cases dm1 with
-          | zero => contradiction
-          | succ dm2 =>
-            simp
-            have dm1_mod_four_eq_zero: ((dm2 + 2 - 1) % 4) = 0 := by
-              tauto
-            simp at dm1_mod_four_eq_zero
-            intro d_mod_four_eq_zero
-            rw [← Nat.zero_mod 4] at dm1_mod_four_eq_zero
-            rw [← Nat.zero_mod 4, ← Nat.ModEq] at d_mod_four_eq_zero
-            apply Nat.ModEq.add_right 1 at d_mod_four_eq_zero
-            rw [d_mod_four_eq_zero] at dm1_mod_four_eq_zero
-            simp at dm1_mod_four_eq_zero
+        match d with
+        | 0 | 1 => contradiction
+        | dm2 + 2 =>
+          simp
+          have dm1_mod_four_eq_zero: ((dm2 + 2 - 1) % 4) = 0 := by
+            tauto
+          simp at dm1_mod_four_eq_zero
+          intro d_mod_four_eq_zero
+          rw [← Nat.zero_mod 4] at dm1_mod_four_eq_zero
+          rw [← Nat.zero_mod 4, ← Nat.ModEq] at d_mod_four_eq_zero
+          apply Nat.ModEq.add_right 1 at d_mod_four_eq_zero
+          rw [d_mod_four_eq_zero] at dm1_mod_four_eq_zero
+          simp at dm1_mod_four_eq_zero
 
-      exact hd_right_neg (d - 1) (by
-        cases d with
-        | zero => contradiction
-        | succ dm1 => tauto
-      ) d_m_one_win
+      exact hd_right_neg (d - 1) (by omega) d_m_one_win
     )
 
 have hackerProof: winCondition d ↔ hackerWin d :=
@@ -295,8 +277,7 @@ have hackerProof: winCondition d ↔ hackerWin d :=
       rename_i d_geq_three
       simp
 
-      have zero_equiv_four: Nat.ModEq 4 0 4 := by
-        tauto
+      have zero_equiv_four: Nat.ModEq 4 0 4 := by decide
 
       have d_m_one_equiv_0: Nat.ModEq 4 (d - 1) 0 := by
         apply And.right at h
@@ -308,26 +289,20 @@ have hackerProof: winCondition d ↔ hackerWin d :=
         by_cases d - 3 = 0
 
         rename_i d_m_three_eq_zero
-        rw [d_m_three_eq_zero]; tauto
+        rw [d_m_three_eq_zero]; decide
 
         rename_i d_m_three_neq_zero
         simp [d_m_three_neq_zero]
-        cases d with
-        | zero => contradiction
-        | succ dm1 => cases dm1 with
-          | zero => contradiction
-          | succ dm2 => cases dm2 with
-            | zero => contradiction
-            | succ dm3 => cases dm3 with
-              | zero => contradiction
-              | succ dm4 =>
-                simp
-                simp at h
-                rw [← Nat.zero_mod 4, ← Nat.ModEq] at h
-                apply Nat.ModEq.trans h at zero_equiv_four
-                apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 3) at zero_equiv_four
-                rw [zero_equiv_four]
-                simp
+        match d with
+        | 0 | 1 | 2 | 3 => contradiction
+        | dm4 + 4 =>
+          simp
+          simp at h
+          rw [← Nat.zero_mod 4, ← Nat.ModEq] at h
+          apply Nat.ModEq.trans h at zero_equiv_four
+          apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 3) at zero_equiv_four
+          rw [zero_equiv_four]
+          simp
       have d_minus_two_win: winCondition (d - 2) := by
         rw [winCondition]
         simp
@@ -336,20 +311,18 @@ have hackerProof: winCondition d ↔ hackerWin d :=
         tauto
         rename_i d_m_two_neq_zero
         simp [d_m_two_neq_zero]
-        cases d with
-        | zero => contradiction
-        | succ dm1 => cases dm1 with
-          | zero => contradiction
-          | succ dm2 => cases dm2 with
-            | zero => contradiction
-            | succ dm3 =>
-              simp
-              simp at h
-              rw [← Nat.zero_mod 4, ← Nat.ModEq] at h
-              apply Nat.ModEq.trans h at zero_equiv_four
-              apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 2) at zero_equiv_four
-              rw [zero_equiv_four]
-              simp
+        match d with
+        | 0 => contradiction
+        | 1 => contradiction
+        | 2 => contradiction
+        | dm3 + 3 =>
+          simp
+          simp at h
+          rw [← Nat.zero_mod 4, ← Nat.ModEq] at h
+          apply Nat.ModEq.trans h at zero_equiv_four
+          apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 2) at zero_equiv_four
+          rw [zero_equiv_four]
+          simp
       have d_minus_one_win: winCondition (d - 1) := by
         rw [winCondition]
         simp
@@ -358,61 +331,44 @@ have hackerProof: winCondition d ↔ hackerWin d :=
         tauto
         rename_i d_m_one_neq_zero
         simp [d_m_one_neq_zero]
-        cases d with
-        | zero => contradiction
-        | succ dm1 => cases dm1 with
-          | zero => contradiction
-          | succ dm2 =>
-            simp
-            simp at h
-            rw [← Nat.zero_mod 4, ← Nat.ModEq] at h
-            apply Nat.ModEq.trans h at zero_equiv_four
-            apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 1) at zero_equiv_four
-            rw [zero_equiv_four]
-            simp
-
-      have zero_lt_d: 0 < d := by
-        cases d with
-        | zero => contradiction
-        | succ dm1 => simp
+        match d with
+        | 0 | 1 => contradiction
+        | dm2 + 2 =>
+          simp
+          simp at h
+          rw [← Nat.zero_mod 4, ← Nat.ModEq] at h
+          apply Nat.ModEq.trans h at zero_equiv_four
+          apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 1) at zero_equiv_four
+          rw [zero_equiv_four]
+          simp
 
       have squad_win_three: squadWin (d - 3) := by
         exact hd_left (d - 3) (by
-          simp
-          exact zero_lt_d
+          omega
         ) d_minus_three_win
 
       have squad_win_two: squadWin (d - 2) := by
         exact hd_left (d - 2) (by
-          simp
-          exact zero_lt_d
+          omega
         ) d_minus_two_win
 
       have squad_win_one: squadWin (d - 1) := by
         exact hd_left (d - 1) (by
-          simp
-          exact zero_lt_d
+          omega
         ) d_minus_one_win
       tauto
 
       rename_i d_lt_three
       split
+      -- d == 2
       rename_i d_eq_two
       rw [d_eq_two] at h
       contradiction
 
       rename_i d_neq_two
-      have d_eq_one: d = 1 := by
-        cases d with
-        | zero => contradiction -- d = 0
-        | succ dm1 => cases dm1 with
-          | zero => tauto -- d = 1
-          | succ dm2 => cases dm2 with
-            | zero => contradiction -- d = 2
-            | succ dm3 => simp at d_lt_three -- d >= 3
-
+      have d_eq_one: d = 1 := by omega
       simp [d_eq_one]
-      rw [squadWin]; tauto
+      rw [squadWin]; decide
     )
 
 tauto
