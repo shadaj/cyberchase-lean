@@ -25,11 +25,7 @@ def hackerWin (dragons: Nat): Bool :=
     True
 end
 
-theorem neZeroImpliesGtZero (n: Nat): n ≠ 0 → n > 0 := by
-intro h
-cases n with
-| zero => contradiction
-| succ n' => simp
+theorem neZeroImpliesGtZero (n: Nat): n ≠ 0 → n > 0 := by omega
 
 def winCondition (dragons: Nat): Bool :=
   (dragons = 0) ∨ (dragons - 1) % 4 ≠ 0
