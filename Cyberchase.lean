@@ -32,6 +32,27 @@ def winCondition (dragons: Nat): Bool :=
 
 lemma dm1_eq_k_means_d_neq_k {d k : Nat} (H : (d - 1) % 4 = k) (k_ne_zero : k ≠ 0) : d - k ≠ 0 := by omega
 
+lemma generic_hacker_not_win {d k dmk : Nat} (H: d - 1 ≡ k [MOD 4]) (km4_eq_k : k % 4 = k) (dmk_eq : dmk + k + 1 = d) (k_ne_zero : k ≠ 0) : ¬(winCondition (d - k)) := by
+  have dmk_eq_rev : dmk = d - k - 1 := by
+    rw [← dmk_eq]
+    omega
+
+  rw [winCondition]
+  simp [dm1_eq_k_means_d_neq_k (by
+    rw [H]; simp [km4_eq_k]
+  ) k_ne_zero] -- eliminates d = 0 case in h
+
+  have next_d_mod_four: (((d - k) - 1) % 4) = 0 := by
+    rw [← dmk_eq] at H
+    rw [← Nat.zero_mod 4, ← Nat.ModEq]
+    simp at H
+    rw (occs := .pos [2]) [← Nat.add_zero (k)] at H
+    rw (occs := .pos [2]) [← Nat.add_comm] at H
+    apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl k) at H
+    rw [dmk_eq_rev] at H
+    exact H
+  exact next_d_mod_four
+
 theorem weWin (dragons: Nat): (winCondition dragons ↔ squadWin dragons) ∧ (winCondition dragons ↔ hackerWin dragons) := by
 induction' dragons using Nat.strong_induction_on with d hd
 
@@ -56,94 +77,51 @@ have squadProof: winCondition d ↔ squadWin d :=
       rw [squadWin]
       split
 
+      -- d == 0
       trivial
 
       rename_i d_ne_zero
 
-      have d_gt_zero: d > 0 := by
-        apply neZeroImpliesGtZero at d_ne_zero
-        exact d_ne_zero
-
       split
+      -- d == 1
       rename_i d_eq_one
       rw [d_eq_one] at h
       contradiction
 
-      mod_cases (d - 1) % 4
+      -- d > 1
+      by_cases (d - 1) % 4 = 0
 
       -- d - 1 = 0 (mod 4)
+      rename_i H
       rw [H] at h
       simp at h
       contradiction -- H contradicts win state
 
       -- d - 1 = 1 (mod 4)
+      have ⟨k, hk⟩ : ∃ k ≠ 0, k % 4 = k ∧ (d - 1) % 4 = k := by
+        use (d - 1) % 4
+        omega
+      have H : d - 1 ≡ k [MOD 4] := by
+        have a : (d - 1) % 4 = k := by
+          tauto
+        have b : k % 4 = k := by
+          tauto
+        rw [← b] at a
+        exact a
       rw [H]; simp
 
-      have hacker_not_win: ¬(winCondition (d - 1)) := by
-        rw [winCondition]
-        simp [dm1_eq_k_means_d_neq_k H] -- eliminates d = 0 case in h
+      have hacker_not_win: ¬(winCondition (d - k)) := generic_hacker_not_win (dmk := d - k - 1) (H) (by
+        simp [hk]
+      ) (by omega) (by simp [hk])
 
-        have next_d_mod_four: ((d - 1 - 1) % 4) = 0 := by
-          match d with
-          | 0 | 1 => contradiction
-          | dm2 + 2 =>
-            rw [← Nat.zero_mod 4, ← Nat.ModEq]
-            simp at H
-            apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 1) at H
-            exact H
-        exact next_d_mod_four
-
-      apply hd_right (d - 1) (by
-        simp [d_gt_zero]
+      apply hd_right (d - k) (by
+        omega
       ) at hacker_not_win
       simp at hacker_not_win
-      exact hacker_not_win
-
-      -- d - 1 = 2 (mod 4)
-      rw [H]; simp
-
-      have hacker_not_win: ¬(winCondition (d - 2)) := by
-        rw [winCondition]
-        simp [dm1_eq_k_means_d_neq_k H] -- eliminates d = 0 case in h
-
-        have next_d_mod_four: (((d - 2) - 1) % 4) = 0 := by
-          match d with
-          | 0 | 1 | 2 => contradiction
-          | dm3 + 3 =>
-            rw [← Nat.zero_mod 4, ← Nat.ModEq]
-            simp at H
-            apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 2) at H
-            exact H
-        exact next_d_mod_four
-
-      apply hd_right (d - 2) (by
-        simp [d_gt_zero]
-      ) at hacker_not_win
-      simp at hacker_not_win
-      exact hacker_not_win
-
-      -- d - 1 = 3 (mod 4)
-      rw [H]; simp
-
-      have hacker_not_win: ¬(winCondition (d - 3)) := by
-        rw [winCondition]
-        simp [dm1_eq_k_means_d_neq_k H] -- eliminates d = 0 case in h
-
-        have next_d_mod_four: (((d - 3) - 1) % 4) = 0 := by
-          match d with
-          | 0 | 1 | 2 | 3 => contradiction
-          | dm4 + 4 =>
-            rw [← Nat.zero_mod 4, ← Nat.ModEq]
-            simp at H
-            apply Nat.ModEq.add_right_cancel (Nat.ModEq.refl 3) at H
-            exact H
-        exact next_d_mod_four
-
-      apply hd_right (d - 3) (by
-        simp [d_gt_zero]
-      ) at hacker_not_win
-      simp at hacker_not_win
-      exact hacker_not_win
+      simp [hk]
+      match k with
+      | 1 | 2 | 3 => simp; exact hacker_not_win
+      | _ + 4 => omega -- cannot happen because k % 4 = k
     )
     (fun h: squadWin d => show winCondition d by
       contrapose h
@@ -185,7 +163,6 @@ have hackerProof: winCondition d ↔ hackerWin d :=
       -- d >= 3
       rename_i d_geq_three
       match d with
-      | 0 | 1 | 2 => contradiction
       | 3 => simp; nth_rewrite 2 [squadWin]; simp -- d = 3
       | dm4 + 4 => -- d > 3
           simp
