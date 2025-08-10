@@ -80,8 +80,6 @@ have squadProof: winCondition d ↔ squadWin d :=
       -- d == 0
       trivial
 
-      rename_i d_ne_zero
-
       split
       -- d == 1
       rename_i d_eq_one
@@ -97,6 +95,7 @@ have squadProof: winCondition d ↔ squadWin d :=
       simp at h
       contradiction -- H contradicts win state
 
+      -- d - 1 = k (mod 4), k > 0
       have ⟨k, hk⟩ : ∃ k ≠ 0, k % 4 = k ∧ (d - 1) % 4 = k := by
         use (d - 1) % 4
         omega
