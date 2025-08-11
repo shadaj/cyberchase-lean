@@ -29,20 +29,13 @@ theorem poison_number_for_hacker (green_dragons: Nat) (h: isPoisonNumber green_d
   induction' green_dragons using Nat.strong_induction_on with green_dragons hd
 
   simp [isPoisonNumber] at h
-  unfold hackerWins
-  split
+  simp [hackerWins]
 
-  -- green_dragons = 0
-  simp
-
-  -- green_dragons > 0
+  intro -- green_dragons > 0
   match green_dragons with
-  | 0 => contradiction
-  | 1 => contradiction
-  | 2 => contradiction
-  | 3 => contradiction
+  | 0 | 1 | 2 | 3 => contradiction
   | next_poison + 4 =>
-    unfold squadWins; simp
+    simp [squadWins]
     have next_poison_mod_4: next_poison ≡ 0 [MOD 4] := by
       have mod_4_eq_zero: 4 ≡ 0 [MOD 4] := by
         simp [Nat.ModEq]
