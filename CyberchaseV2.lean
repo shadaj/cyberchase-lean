@@ -20,10 +20,10 @@ end
 def isPoisonNumber (green_dragons: Nat): Bool :=
   Nat.ModEq 4 green_dragons 0
 
-theorem mod_zero_plus_k { x k: Nat } (h: k < 4) (h3: Nat.ModEq 4 x 0): (x + k) % 4 = k := by
-  rw [Nat.ModEq] at h3
-  simp [Nat.add_mod, h3]
-  exact h
+theorem mod_zero_plus_k { x k n: Nat } (k_lt_n: k < n) (x_congr_zero: Nat.ModEq n x 0): (x + k) % n = k := by
+  rw [Nat.ModEq] at x_congr_zero
+  nth_rewrite 2 [← Nat.mod_eq_of_lt k_lt_n]
+  rw [Nat.add_mod, x_congr_zero]; simp
 
 theorem poison_number_for_hacker (green_dragons: Nat) (h: isPoisonNumber green_dragons): ¬ hackerWins green_dragons := by
   induction' green_dragons using Nat.strong_induction_on with green_dragons hd
