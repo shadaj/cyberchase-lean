@@ -18,9 +18,9 @@ def hackerWins (green_dragons: Nat): Bool :=
 end
 
 def isPoisonNumber (green_dragons: Nat): Bool :=
-  Nat.ModEq 4 green_dragons 0
+  green_dragons ≡ 0 [MOD 4]
 
-theorem mod_zero_plus_k { x k n: Nat } (k_lt_n: k < n) (x_congr_zero: Nat.ModEq n x 0): (x + k) % n = k := by
+theorem mod_zero_plus_k { x k n: Nat } (k_lt_n: k < n) (x_congr_zero: x ≡ 0 [MOD n]): (x + k) % n = k := by
   rw [Nat.ModEq] at x_congr_zero
   nth_rewrite 2 [← Nat.mod_eq_of_lt k_lt_n]
   rw [Nat.add_mod, x_congr_zero]; simp
@@ -33,7 +33,6 @@ theorem poison_number_for_hacker (green_dragons: Nat) (h: isPoisonNumber green_d
 
   intro -- green_dragons > 0
   match green_dragons with
-  | 0 | 1 | 2 | 3 => contradiction
   | next_poison + 4 =>
     simp [squadWins]
     have next_poison_mod_4: next_poison ≡ 0 [MOD 4] := by
