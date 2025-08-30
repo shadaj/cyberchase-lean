@@ -1,4 +1,4 @@
-import Mathlib.Tactic.ModCases
+import Mathlib.Data.Nat.ModEq
 
 def squadStrategy (green_dragons: Nat): Nat :=
   if green_dragons % 4 = 0 then
@@ -34,11 +34,10 @@ theorem mod_zero_plus_k { x k n: Nat } (k_lt_n: k < n) (x_congr_zero: x ≡ 0 [M
   rw [Nat.add_mod, x_congr_zero]; simp
 
 theorem poison_number_for_hacker (green_dragons: Nat) (h: isPoisonNumber green_dragons): ¬ hackerWins green_dragons := by
-  induction' green_dragons using Nat.strong_induction_on with green_dragons hd
-
+  induction green_dragons using Nat.strong_induction_on with
+  | _ green_dragons hd =>
   simp [isPoisonNumber] at h
   simp [hackerWins]
-
   intro -- green_dragons > 0
   match green_dragons with
   | 0 | 1 | 2 | 3 => contradiction -- can be elided by Lean, but nice to be explicit
