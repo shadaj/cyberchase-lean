@@ -41,6 +41,7 @@ theorem poison_number_for_hacker (green_dragons: Nat) (h: isPoisonNumber green_d
 
   intro -- green_dragons > 0
   match green_dragons with
+  | 0 | 1 | 2 | 3 => contradiction -- can be elided by Lean, but nice to be explicit
   | next_poison + 4 =>
     simp [squadWins, squadStrategy]
     have next_poison_mod_4: next_poison ≡ 0 [MOD 4] := by
