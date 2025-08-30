@@ -1,14 +1,22 @@
 import Mathlib.Tactic.ModCases
 
+def squadStrategy (green_dragons: Nat): Nat :=
+  if green_dragons % 4 = 0 then
+    1
+  else
+    (green_dragons % 4)
+
 mutual
 def squadWins (green_dragons: Nat): Bool :=
   if green_dragons = 0 then
     False
   else
-    if green_dragons % 4 = 0 then
-      ¬ hackerWins (green_dragons - 1)
-    else
-      ¬ hackerWins (green_dragons - (green_dragons % 4))
+    have decreasing: (squadStrategy green_dragons) > 0 := by
+      rw [squadStrategy]
+      split
+      . decide -- green_dragons % 4 = 0
+      . omega -- green_dragons % 4 ≠ 0
+    ¬ hackerWins (green_dragons - (squadStrategy green_dragons))
 
 def hackerWins (green_dragons: Nat): Bool :=
   if green_dragons = 0 then
@@ -34,7 +42,7 @@ theorem poison_number_for_hacker (green_dragons: Nat) (h: isPoisonNumber green_d
   intro -- green_dragons > 0
   match green_dragons with
   | next_poison + 4 =>
-    simp [squadWins]
+    simp [squadWins, squadStrategy]
     have next_poison_mod_4: next_poison ≡ 0 [MOD 4] := by
       have mod_4_eq_zero: 4 ≡ 0 [MOD 4] := by
         simp [Nat.ModEq]
@@ -57,7 +65,7 @@ theorem poison_number_for_hacker (green_dragons: Nat) (h: isPoisonNumber green_d
 
 theorem non_poison_squad_win (green_dragons: Nat) (h: ¬ isPoisonNumber green_dragons): squadWins green_dragons := by
   simp [isPoisonNumber] at h
-  simp [squadWins]
+  simp [squadWins, squadStrategy]
 
   have green_dragons_nonzero: green_dragons ≠ 0 := by
     intro zero_dragon
@@ -66,13 +74,13 @@ theorem non_poison_squad_win (green_dragons: Nat) (h: ¬ isPoisonNumber green_dr
 
   simp [green_dragons_nonzero]
   split
-  contradiction -- green_dragons % 4 = 0 (but that is poison)
+  . contradiction -- green_dragons % 4 = 0 (but that is poison)
 
-  have hacker_given_poison: (green_dragons - (green_dragons % 4)) % 4 = 0 :=
+  . have hacker_given_poison: (green_dragons - (green_dragons % 4)) % 4 = 0 :=
     by omega
-  have hackerLoses := poison_number_for_hacker (green_dragons - (green_dragons % 4)) (by
-    simp [isPoisonNumber]
-    rw [Nat.ModEq]; simp
-    exact hacker_given_poison
-  )
-  simp at hackerLoses; exact hackerLoses
+    have hackerLoses := poison_number_for_hacker (green_dragons - (green_dragons % 4)) (by
+      simp [isPoisonNumber]
+      rw [Nat.ModEq]; simp
+      exact hacker_given_poison
+    )
+    simp at hackerLoses; exact hackerLoses
