@@ -34,6 +34,7 @@ theorem mod_zero_plus_k { x k n: Nat } (k_lt_n: k < n) (x_congr_zero: x ≡ 0 [M
   rw [Nat.add_mod, x_congr_zero]; simp
 
 theorem poison_number_for_hacker (green_dragons: Nat) (h: isPoisonNumber green_dragons): ¬ hackerWins green_dragons := by
+  simp
   induction green_dragons using Nat.strong_induction_on with
   | _ green_dragons hd =>
   simp [isPoisonNumber] at h
@@ -58,25 +59,18 @@ theorem poison_number_for_hacker (green_dragons: Nat) (h: isPoisonNumber green_d
       simp [isPoisonNumber]
       exact next_poison_mod_4
 
-    apply hd next_poison (by simp) at nextIsPoison
-    simp [nextIsPoison]
+    exact hd next_poison (by simp) nextIsPoison
 
 theorem non_poison_squad_win (green_dragons: Nat) (h: ¬ isPoisonNumber green_dragons): squadWins green_dragons := by
   simp [isPoisonNumber] at h
   simp [squadWins, squadStrategy]
 
-  have green_dragons_nonzero: green_dragons ≠ 0 := by
-    intro zero_dragon
-    rw [zero_dragon] at h
-    contradiction
-
-  simp [green_dragons_nonzero]
   split
   . contradiction -- green_dragons % 4 = 0 (but that is poison)
-  . have hacker_given_poison: (green_dragons - (green_dragons % 4)) % 4 = 0 :=
-      by omega
-    have hackerLoses := poison_number_for_hacker (green_dragons - (green_dragons % 4)) (by
+  . have hackerLoses := poison_number_for_hacker (green_dragons - (green_dragons % 4)) (by
       simp [isPoisonNumber]
-      rw [Nat.ModEq, hacker_given_poison]
+      rw [Nat.ModEq]
+      omega
     )
     simp [hackerLoses]
+    omega
