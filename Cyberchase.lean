@@ -30,36 +30,42 @@ def isPoisonNumber (green_dragons: Nat): Bool :=
 
 theorem mod_zero_plus_k { x k n: Nat } (k_lt_n: k < n) (x_congr_zero: x ≡ 0 [MOD n]): (x + k) % n = k := by
   rw [Nat.ModEq] at x_congr_zero
-  nth_rewrite 2 [← Nat.mod_eq_of_lt k_lt_n]
-  rw [Nat.add_mod, x_congr_zero]; simp
+  rw [
+    Nat.add_mod,
+    x_congr_zero
+  ]
+  simp
+  exact Nat.mod_eq_of_lt k_lt_n
 
 theorem poison_number_for_hacker (green_dragons: Nat) (h: isPoisonNumber green_dragons): ¬ hackerWins green_dragons := by
   simp
   induction green_dragons using Nat.strong_induction_on with
   | _ green_dragons hd =>
-  simp [isPoisonNumber] at h
-  simp [hackerWins]
-  intro -- green_dragons > 0
-  match green_dragons with
-  | 0 | 1 | 2 | 3 => contradiction -- can be elided by Lean, but nice to be explicit
-  | next_poison + 4 =>
-    simp [squadWins, squadStrategy]
-    have next_poison_mod_4: next_poison ≡ 0 [MOD 4] := by
-      have mod_4_eq_zero: 4 ≡ 0 [MOD 4] := by decide
-      exact Nat.ModEq.add_right_cancel mod_4_eq_zero h
+    simp [isPoisonNumber] at h
+    simp [hackerWins]
+    intro -- green_dragons > 0
+    match green_dragons with
+      | 0 | 1 | 2 | 3 => contradiction -- can be elided by Lean, but nice to be explicit
+      | next_poison + 4 =>
+        simp
+        simp [squadWins, squadStrategy]
+        have next_poison_mod_4: next_poison ≡ 0 [MOD 4] := by
+          rw [Nat.ModEq] at h
+          rw [Nat.ModEq]
+          omega
 
-    rw [
-      mod_zero_plus_k (by decide) next_poison_mod_4,
-      mod_zero_plus_k (by decide) next_poison_mod_4,
-      mod_zero_plus_k (by decide) next_poison_mod_4
-    ]
-    simp
+        rw [
+          mod_zero_plus_k (by decide) next_poison_mod_4,
+          mod_zero_plus_k (by decide) next_poison_mod_4,
+          mod_zero_plus_k (by decide) next_poison_mod_4
+        ]
+        simp
 
-    have nextIsPoison: isPoisonNumber next_poison := by
-      simp [isPoisonNumber]
-      exact next_poison_mod_4
+        have nextIsPoison: isPoisonNumber next_poison := by
+          simp [isPoisonNumber]
+          exact next_poison_mod_4
 
-    exact hd next_poison (by simp) nextIsPoison
+        exact hd next_poison (by simp) nextIsPoison
 
 theorem non_poison_squad_win (green_dragons: Nat) (h: ¬ isPoisonNumber green_dragons): squadWins green_dragons := by
   simp [isPoisonNumber] at h
