@@ -1,5 +1,3 @@
-import Mathlib.Data.Nat.ModEq
-
 def squadStrategy (green_dragons: Nat): Nat :=
   if green_dragons % 4 = 0 then
     1
@@ -26,10 +24,9 @@ def hackerWins (green_dragons: Nat): Bool :=
 end
 
 def isPoisonNumber (green_dragons: Nat): Bool :=
-  green_dragons ≡ 0 [MOD 4]
+  green_dragons % 4 = 0
 
-theorem mod_zero_plus_k { x k n: Nat } (k_lt_n: k < n) (x_congr_zero: x ≡ 0 [MOD n]): (x + k) % n = k := by
-  rw [Nat.ModEq] at x_congr_zero
+theorem mod_zero_plus_k { x k n: Nat } (k_lt_n: k < n) (x_congr_zero: x % n = 0): (x + k) % n = k := by
   rw [
     Nat.add_mod,
     x_congr_zero
@@ -39,7 +36,7 @@ theorem mod_zero_plus_k { x k n: Nat } (k_lt_n: k < n) (x_congr_zero: x ≡ 0 [M
 
 theorem poison_number_for_hacker (green_dragons: Nat) (h: isPoisonNumber green_dragons): ¬ hackerWins green_dragons := by
   simp
-  induction green_dragons using Nat.strong_induction_on with
+  induction green_dragons using Nat.strongRecOn with
   | _ green_dragons hd =>
     simp [isPoisonNumber] at h
     simp [hackerWins]
@@ -49,9 +46,7 @@ theorem poison_number_for_hacker (green_dragons: Nat) (h: isPoisonNumber green_d
       | next_poison + 4 =>
         simp
         simp [squadWins, squadStrategy]
-        have next_poison_mod_4: next_poison ≡ 0 [MOD 4] := by
-          rw [Nat.ModEq] at h
-          rw [Nat.ModEq]
+        have next_poison_mod_4: next_poison % 4 = 0 := by
           omega
 
         rw [
@@ -75,7 +70,6 @@ theorem non_poison_squad_win (green_dragons: Nat) (h: ¬ isPoisonNumber green_dr
   . contradiction -- green_dragons % 4 = 0 (but that is poison)
   . have hackerLoses := poison_number_for_hacker (green_dragons - (green_dragons % 4)) (by
       simp [isPoisonNumber]
-      rw [Nat.ModEq]
       omega
     )
     simp [hackerLoses]
